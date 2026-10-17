@@ -18,10 +18,12 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "created_at", nullable = false)
+    @org.hibernate.annotations.CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @org.hibernate.annotations.UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @OneToOne(fetch = FetchType.LAZY)
