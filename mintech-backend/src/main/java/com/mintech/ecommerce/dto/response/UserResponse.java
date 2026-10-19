@@ -1,6 +1,6 @@
-package com.mintech.ecommerce.dto.reponse;
+package com.mintech.ecommerce.dto.response;
 
-import java.time.LocalDateTime;
+import com.mintech.ecommerce.entity.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserResponse {
     private Long id;
-    private String username;
+    private String fullName;
     private String email;
     private String phone;
-
+    private Role role;
+    private String status;
 }

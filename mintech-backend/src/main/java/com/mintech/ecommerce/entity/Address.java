@@ -49,6 +49,7 @@ public class Address {
     @Column(name = "detail_address", nullable = false, length = 255)
     private String detailAddress;
 
+    @Builder.Default
     @Column(name = "is_default", nullable = false)
     private boolean isDefault = false;
 
