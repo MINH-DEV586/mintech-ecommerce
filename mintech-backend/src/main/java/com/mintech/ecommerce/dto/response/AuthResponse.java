@@ -1,4 +1,4 @@
-package com.mintech.ecommerce.dto.reponse;
+package com.mintech.ecommerce.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthResponse {
-
     private String accessToken;
     private String tokenType;
 }
