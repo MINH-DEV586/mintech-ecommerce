@@ -27,12 +27,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updateProfile(Long id, UserRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
+    public UserResponse updateProfile(String email, UserRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại: " + email));
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setStatus(request.getStatus());
+        return mapToResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updatePassword(Long id, String password) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
+        user.setPasswordHash(password);
         return mapToResponse(user);
     }
 
@@ -47,4 +56,3 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 }
-
