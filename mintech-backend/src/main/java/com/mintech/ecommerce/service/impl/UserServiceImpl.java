@@ -1,11 +1,13 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.dto.request.UserRequest;
 import com.mintech.ecommerce.dto.response.UserResponse;
 import com.mintech.ecommerce.entity.User;
 import com.mintech.ecommerce.repository.UserRepository;
 import com.mintech.ecommerce.service.UserService;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,21 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại: " + email));
 
+        return mapToResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updateProfile(Long id, UserRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
+        user.setFullName(request.getFullName());
+        user.setPhone(request.getPhone());
+        user.setStatus(request.getStatus());
+        return mapToResponse(user);
+    }
+
+    private UserResponse mapToResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
@@ -30,3 +47,4 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 }
+
