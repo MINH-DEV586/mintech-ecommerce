@@ -47,12 +47,14 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse createProduct(ProductRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
 
         Brand brand = null;
         if (request.getBrandId() != null) {
             brand = brandRepository.findById(request.getBrandId())
-                    .orElseThrow(() -> new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + request.getBrandId()));
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Thương hiệu không tồn tại với ID: " + request.getBrandId()));
         }
 
         Product product = new Product();
@@ -94,7 +96,6 @@ public class ProductServiceImpl implements ProductService {
             productImageRepository.saveAll(images);
         }
 
-        // Lưu thông số kỹ thuật (ProductSpecification)
         if (request.getSpecifications() != null && !request.getSpecifications().isEmpty()) {
             List<ProductSpecification> specs = request.getSpecifications().stream().map(sReq -> {
                 ProductSpecification spec = new ProductSpecification();
@@ -131,12 +132,14 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + id));
 
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
 
         Brand brand = null;
         if (request.getBrandId() != null) {
             brand = brandRepository.findById(request.getBrandId())
-                    .orElseThrow(() -> new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + request.getBrandId()));
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Thương hiệu không tồn tại với ID: " + request.getBrandId()));
         }
 
         product.setName(request.getName());
@@ -214,4 +217,3 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 }
-

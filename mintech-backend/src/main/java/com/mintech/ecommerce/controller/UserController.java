@@ -1,5 +1,9 @@
 package com.mintech.ecommerce.controller;
 
+import com.mintech.ecommerce.dto.response.UserResponse;
+import com.mintech.ecommerce.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,10 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
-    @GetMapping("/me")
 
-    public ResponseEntity<String> getCurrentUser(Authentication authentication) {
-        return ResponseEntity.ok("Current user: " + authentication.getName());
+    private final UserService userService;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getMe(Authentication authentication) {
+        UserResponse response = userService.getMe(authentication.getName());
+        return ResponseEntity.ok(response);
     }
 }
