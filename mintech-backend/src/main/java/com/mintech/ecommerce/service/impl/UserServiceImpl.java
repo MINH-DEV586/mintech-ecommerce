@@ -9,13 +9,17 @@ import com.mintech.ecommerce.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+
 
     @Override
     public UserResponse getMe(String email) {
@@ -32,7 +36,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại: " + email));
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
-        user.setStatus(request.getStatus());
         return mapToResponse(user);
     }
 
@@ -41,7 +44,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse updatePassword(Long id, String password) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
-        user.setPasswordHash(password);
+        user.setPasswordHash(passwordEncoder.encode(password));
         return mapToResponse(user);
     }
 
@@ -54,5 +57,13 @@ public class UserServiceImpl implements UserService {
                 .role(user.getRole())
                 .status(user.getStatus())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public UserResponse getById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
+        return mapToResponse(user);
     }
 }

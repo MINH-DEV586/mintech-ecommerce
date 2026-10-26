@@ -1,6 +1,5 @@
 package com.mintech.ecommerce.dto.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -10,19 +9,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserRequest {
-    @NotBlank(message = "Tên không được để trống")
-    @Size(max = 100, message = "Tên không được vượt quá 100 ký tự")
-    private String fullName;
 
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không hợp lệ")
-    @Size(max = 100, message = "Email không được vượt quá 100 ký tự")
-    private String email;
+    @NotBlank(message = "Tên không được để trống")
+    @Size(min = 2, max = 100, message = "Tên phải từ 2 đến 100 ký tự")
+    private String fullName;
 
     @NotBlank(message = "Số điện thoại không được để trống")
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Số điện thoại không hợp lệ")
     private String phone;
-
-    @Pattern(regexp = "^(ACTIVE|INACTIVE)$", message = "Trạng thái phải là ACTIVE hoặc INACTIVE")
-    private String status;
 }
+
