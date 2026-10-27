@@ -1,4 +1,4 @@
-﻿package com.mintech.ecommerce.dto.request;
+package com.mintech.ecommerce.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

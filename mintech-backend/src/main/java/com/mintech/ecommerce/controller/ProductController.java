@@ -22,7 +22,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 public class ProductController {
 

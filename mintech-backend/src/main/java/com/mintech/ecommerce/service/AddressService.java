@@ -9,4 +9,10 @@ public interface AddressService {
 
     AddressResponse getAddressById(Long id);
 
+    AddressResponse updateAddress(Long id, AddressRequest request);
+
+    AddressResponse addAddressForUser(String email, AddressRequest request);
+
+    void deleteAddress(Long id);
+
 }
