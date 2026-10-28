@@ -3,14 +3,12 @@ package com.mintech.ecommerce.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.mintech.ecommerce.repository.AddressRepository;
-import com.mintech.ecommerce.repository.UserRepository;
 import com.mintech.ecommerce.dto.response.AddressResponse;
 import com.mintech.ecommerce.entity.Address;
 import com.mintech.ecommerce.entity.User;
 import com.mintech.ecommerce.service.AddressService;
 import com.mintech.ecommerce.dto.request.AddressRequest;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -18,9 +16,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
-    private final UserRepository userRepository;
 
-    @Override 
+    @Override
     @Transactional
     public AddressResponse createAddress(AddressRequest request) {
         Address address = new Address();
@@ -34,19 +31,17 @@ public class AddressServiceImpl implements AddressService {
         return mapToResponse(addressRepository.save(address));
     }
 
-    @Override 
+    @Override
     @Transactional
     public AddressResponse getAddressById(Long id) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Address not found with id: " + id));
+        Address address = addressRepository.findById(id).orElseThrow(() -> new RuntimeException("Address not found"));
         return mapToResponse(address);
     }
 
-    @Override 
+    @Override
     @Transactional
     public AddressResponse updateAddress(Long id, AddressRequest request) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Address not found with id: " + id));
+        Address address = addressRepository.findById(id).orElseThrow(() -> new RuntimeException("Address not found"));
         address.setRecipientName(request.getRecipientName());
         address.setPhone(request.getPhone());
         address.setProvince(request.getProvince());
@@ -57,12 +52,9 @@ public class AddressServiceImpl implements AddressService {
         return mapToResponse(addressRepository.save(address));
     }
 
-    @Override 
+    @Override
     @Transactional
     public AddressResponse addAddressForUser(String email, AddressRequest request) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
-
         Address address = new Address();
         address.setRecipientName(request.getRecipientName());
         address.setPhone(request.getPhone());
@@ -71,16 +63,13 @@ public class AddressServiceImpl implements AddressService {
         address.setWard(request.getWard());
         address.setDetailAddress(request.getDetailAddress());
         address.setDefault(request.isDefault());
-        address.setUser(user);
-
         return mapToResponse(addressRepository.save(address));
     }
 
-    @Override 
+    @Override
     @Transactional
     public void deleteAddress(Long id) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Address not found with id: " + id));
+        Address address = addressRepository.findById(id).orElseThrow(() -> new RuntimeException("Address not found"));
         addressRepository.delete(address);
     }
 
@@ -96,4 +85,5 @@ public class AddressServiceImpl implements AddressService {
                 .isDefault(address.isDefault())
                 .build();
     }
+
 }
