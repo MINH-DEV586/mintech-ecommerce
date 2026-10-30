@@ -4,11 +4,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class CartRequest {
 
     @NotNull(message = "ID biến thể sản phẩm không được để trống")
-    private Long productVariantId;
+    private UUID productVariantId;
 
     @NotNull(message = "Số lượng không được để trống")
     @Min(value = 1, message = "Số lượng phải ít nhất là 1")

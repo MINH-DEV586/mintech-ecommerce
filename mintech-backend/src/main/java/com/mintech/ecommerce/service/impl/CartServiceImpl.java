@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +31,6 @@ public class CartServiceImpl implements CartService {
     private final UserRepository userRepository;
     private final ProductVariantRepository productVariantRepository;
 
-    // Lấy hoặc tạo cart cho user
     private Cart getOrCreateCart(User user) {
         return cartRepository.findByUserId(user.getId())
                 .orElseGet(() -> {
@@ -61,7 +61,6 @@ public class CartServiceImpl implements CartService {
         ProductVariant variant = productVariantRepository.findById(request.getProductVariantId())
                 .orElseThrow(() -> new RuntimeException("Biến thể sản phẩm không tồn tại"));
 
-        // Nếu item đã có trong cart thì cộng thêm số lượng
         Optional<CartItem> existingItem = cartItemRepository
                 .findByCartIdAndProductVariantId(cart.getId(), variant.getId());
 
@@ -84,14 +83,13 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public CartResponse updateCartItem(String email, Long cartItemId, CartRequest request) {
+    public CartResponse updateCartItem(String email, UUID cartItemId, CartRequest request) {
         User user = getUserByEmail(email);
         Cart cart = getOrCreateCart(user);
 
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không có trong giỏ hàng"));
 
-        // Kiểm tra item thuộc cart của user
         if (!item.getCart().getId().equals(cart.getId())) {
             throw new RuntimeException("Bạn không có quyền sửa item này");
         }
@@ -104,7 +102,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public CartResponse removeCartItem(String email, Long cartItemId) {
+    public CartResponse removeCartItem(String email, UUID cartItemId) {
         User user = getUserByEmail(email);
         Cart cart = getOrCreateCart(user);
 
@@ -161,4 +159,3 @@ public class CartServiceImpl implements CartService {
                 .build();
     }
 }
-

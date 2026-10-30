@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +26,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
     @Override
     @Transactional
-    public ProductVariantResponse createVariant(Long productId, ProductVariantRequest request) {
+    public ProductVariantResponse createVariant(UUID productId, ProductVariantRequest request) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
@@ -42,14 +43,14 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     }
 
     @Override
-    public List<ProductVariantResponse> getVariantsByProductId(Long productId) {
+    public List<ProductVariantResponse> getVariantsByProductId(UUID productId) {
         return productVariantRepository.findByProductId(productId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ProductVariantResponse getVariantById(Long id) {
+    public ProductVariantResponse getVariantById(UUID id) {
         ProductVariant variant = productVariantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Biến thể sản phẩm không tồn tại"));
         return mapToResponse(variant);
@@ -57,7 +58,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
     @Override
     @Transactional
-    public ProductVariantResponse updateVariant(Long id, ProductVariantRequest request) {
+    public ProductVariantResponse updateVariant(UUID id, ProductVariantRequest request) {
         ProductVariant variant = productVariantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Biến thể sản phẩm không tồn tại"));
 
@@ -73,7 +74,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
     @Override
     @Transactional
-    public void deleteVariant(Long id) {
+    public void deleteVariant(UUID id) {
         productVariantRepository.deleteById(id);
     }
 

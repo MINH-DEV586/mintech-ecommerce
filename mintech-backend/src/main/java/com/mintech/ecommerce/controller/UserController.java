@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -41,14 +42,14 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getById(@PathVariable UUID id) {
         UserResponse response = userService.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/password")
-    public ResponseEntity<UserResponse> updatePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<UserResponse> updatePassword(@PathVariable UUID id, @Valid @RequestBody ChangePasswordRequest request) {
         UserResponse response = userService.updatePassword(id, request.getPassword());
         return ResponseEntity.ok(response);
     }

@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,14 +48,12 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse createProduct(ProductRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
+                .orElseThrow(() -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
 
         Brand brand = null;
         if (request.getBrandId() != null) {
             brand = brandRepository.findById(request.getBrandId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Thương hiệu không tồn tại với ID: " + request.getBrandId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + request.getBrandId()));
         }
 
         Product product = new Product();
@@ -68,7 +67,6 @@ public class ProductServiceImpl implements ProductService {
 
         Product savedProduct = productRepository.save(product);
 
-        // Lưu danh sách biến thể (ProductVariant)
         if (request.getVariants() != null && !request.getVariants().isEmpty()) {
             List<ProductVariant> variants = request.getVariants().stream().map(vReq -> {
                 ProductVariant variant = new ProductVariant();
@@ -84,7 +82,6 @@ public class ProductServiceImpl implements ProductService {
             productVariantRepository.saveAll(variants);
         }
 
-        // Lưu danh sách hình ảnh phụ (ProductImage)
         if (request.getImages() != null && !request.getImages().isEmpty()) {
             List<ProductImage> images = request.getImages().stream().map(imgReq -> {
                 ProductImage image = new ProductImage();
@@ -119,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getProductById(Long id) {
+    public ProductResponse getProductById(UUID id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + id));
         return mapToResponse(product);
@@ -127,19 +124,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductResponse updateProduct(Long id, ProductRequest request) {
+    public ProductResponse updateProduct(UUID id, ProductRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + id));
 
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
+                .orElseThrow(() -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
 
         Brand brand = null;
         if (request.getBrandId() != null) {
             brand = brandRepository.findById(request.getBrandId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Thương hiệu không tồn tại với ID: " + request.getBrandId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + request.getBrandId()));
         }
 
         product.setName(request.getName());
@@ -156,7 +151,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void deleteProduct(Long id) {
+    public void deleteProduct(UUID id) {
         if (!productRepository.existsById(id)) {
             throw new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + id);
         }

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
@@ -45,7 +47,7 @@ public class CartController {
     @PutMapping("/items/{cartItemId}")
     public ResponseEntity<CartResponse> updateCartItem(
             Authentication authentication,
-            @PathVariable Long cartItemId,
+            @PathVariable UUID cartItemId,
             @Valid @RequestBody CartRequest request) {
         CartResponse response = cartService.updateCartItem(authentication.getName(), cartItemId, request);
         return ResponseEntity.ok(response);
@@ -55,7 +57,7 @@ public class CartController {
     @DeleteMapping("/items/{cartItemId}")
     public ResponseEntity<CartResponse> removeCartItem(
             Authentication authentication,
-            @PathVariable Long cartItemId) {
+            @PathVariable UUID cartItemId) {
         CartResponse response = cartService.removeCartItem(authentication.getName(), cartItemId);
         return ResponseEntity.ok(response);
     }
@@ -67,4 +69,3 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 }
-

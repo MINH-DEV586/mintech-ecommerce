@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/products/{productId}/variants")
@@ -31,22 +32,22 @@ public class ProductVariantController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductVariantResponse> createVariant(
-            @PathVariable Long productId,
+            @PathVariable UUID productId,
             @Valid @RequestBody ProductVariantRequest request) {
         ProductVariantResponse response = productVariantService.createVariant(productId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductVariantResponse>> getVariantsByProduct(@PathVariable Long productId) {
+    public ResponseEntity<List<ProductVariantResponse>> getVariantsByProduct(@PathVariable UUID productId) {
         List<ProductVariantResponse> variants = productVariantService.getVariantsByProductId(productId);
         return ResponseEntity.ok(variants);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductVariantResponse> getVariantById(
-            @PathVariable Long productId,
-            @PathVariable Long id) {
+            @PathVariable UUID productId,
+            @PathVariable UUID id) {
         ProductVariantResponse response = productVariantService.getVariantById(id);
         return ResponseEntity.ok(response);
     }
@@ -54,8 +55,8 @@ public class ProductVariantController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductVariantResponse> updateVariant(
-            @PathVariable Long productId,
-            @PathVariable Long id,
+            @PathVariable UUID productId,
+            @PathVariable UUID id,
             @Valid @RequestBody ProductVariantRequest request) {
         ProductVariantResponse response = productVariantService.updateVariant(id, request);
         return ResponseEntity.ok(response);
@@ -64,8 +65,8 @@ public class ProductVariantController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVariant(
-            @PathVariable Long productId,
-            @PathVariable Long id) {
+            @PathVariable UUID productId,
+            @PathVariable UUID id) {
         productVariantService.deleteVariant(id);
         return ResponseEntity.noContent().build();
     }

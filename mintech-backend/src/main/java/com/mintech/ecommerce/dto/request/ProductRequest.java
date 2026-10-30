@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -34,9 +35,9 @@ public class ProductRequest {
     private String thumbnailUrl;
 
     @NotNull(message = "Danh mục không được để trống")
-    private Long categoryId;
+    private UUID categoryId;
 
-    private Long brandId;
+    private UUID brandId;
 
     @Valid
     private List<ProductVariantRequest> variants;

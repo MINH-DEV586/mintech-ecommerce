@@ -2,6 +2,7 @@ package com.mintech.ecommerce.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,9 +22,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PayMent {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
+    private UUID id;
 
     @Column(name = "payment_method", nullable = false, length = 50)
     private String paymentMethod;
@@ -43,5 +46,4 @@ public class PayMent {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
-
 }

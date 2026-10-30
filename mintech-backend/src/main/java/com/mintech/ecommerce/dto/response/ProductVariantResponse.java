@@ -4,11 +4,12 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @Builder
 public class ProductVariantResponse {
-    private Long id;
+    private UUID id;
     private String sku;
     private String color;
     private BigDecimal price;

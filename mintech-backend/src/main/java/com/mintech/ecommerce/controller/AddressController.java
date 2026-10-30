@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.UUID;
+
 @RestController 
 @RequestMapping("/api/v1/address")
 @RequiredArgsConstructor
@@ -28,17 +30,17 @@ public class AddressController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AddressResponse> getAddressById(@PathVariable Long id) {
+    public ResponseEntity<AddressResponse> getAddressById(@PathVariable UUID id) {
         return ResponseEntity.ok(addressService.getAddressById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AddressResponse> updateAddress(@PathVariable Long id, @Valid @RequestBody AddressRequest request) {
+    public ResponseEntity<AddressResponse> updateAddress(@PathVariable UUID id, @Valid @RequestBody AddressRequest request) {
         return ResponseEntity.ok(addressService.updateAddress(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAddress(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAddress(@PathVariable UUID id) {
         addressService.deleteAddress(id);
         return ResponseEntity.noContent().build();
     }

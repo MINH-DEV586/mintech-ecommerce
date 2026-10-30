@@ -6,11 +6,12 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
 public class CartResponse {
-    private Long id;
+    private UUID id;
     private List<CartItemResponse> items;
     private BigDecimal totalPrice;
     private LocalDateTime updatedAt;
@@ -18,8 +19,8 @@ public class CartResponse {
     @Data
     @Builder
     public static class CartItemResponse {
-        private Long cartItemId;
-        private Long productVariantId;
+        private UUID cartItemId;
+        private UUID productVariantId;
         private String productName;
         private String color;
         private String sku;
@@ -28,4 +29,3 @@ public class CartResponse {
         private BigDecimal subtotal;
     }
 }
-

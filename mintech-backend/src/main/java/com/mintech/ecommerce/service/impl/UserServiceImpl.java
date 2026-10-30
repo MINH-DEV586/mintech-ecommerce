@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -20,12 +22,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-
     @Override
     public UserResponse getMe(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại: " + email));
-
         return mapToResponse(user);
     }
 
@@ -36,15 +36,22 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại: " + email));
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
-        return mapToResponse(user);
+        return mapToResponse(userRepository.save(user));
     }
 
     @Override
     @Transactional
-    public UserResponse updatePassword(Long id, String password) {
+    public UserResponse updatePassword(UUID id, String password) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
         user.setPasswordHash(passwordEncoder.encode(password));
+        return mapToResponse(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse getById(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
         return mapToResponse(user);
     }
 
@@ -57,13 +64,5 @@ public class UserServiceImpl implements UserService {
                 .role(user.getRole())
                 .status(user.getStatus())
                 .build();
-    }
-
-    @Override
-    @Transactional
-    public UserResponse getById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
-        return mapToResponse(user);
     }
 }

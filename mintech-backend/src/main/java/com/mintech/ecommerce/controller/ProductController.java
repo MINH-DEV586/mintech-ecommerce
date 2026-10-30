@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -42,14 +43,14 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable UUID id) {
         ProductResponse product = productService.getProductById(id);
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable UUID id,
             @Valid @RequestBody ProductRequest request) {
         ProductResponse response = productService.updateProduct(id, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -57,7 +58,7 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

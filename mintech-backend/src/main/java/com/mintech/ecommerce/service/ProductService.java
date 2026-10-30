@@ -4,6 +4,7 @@ import com.mintech.ecommerce.dto.request.ProductRequest;
 import com.mintech.ecommerce.dto.response.ProductResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductService {
 
@@ -11,10 +12,9 @@ public interface ProductService {
 
     List<ProductResponse> getAllProducts();
 
-    ProductResponse getProductById(Long id);
+    ProductResponse getProductById(UUID id);
 
-    ProductResponse updateProduct(Long id, ProductRequest request);
+    ProductResponse updateProduct(UUID id, ProductRequest request);
 
-    void deleteProduct(Long id);
+    void deleteProduct(UUID id);
 }
-

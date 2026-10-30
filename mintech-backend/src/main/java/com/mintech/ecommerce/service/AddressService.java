@@ -3,16 +3,17 @@ package com.mintech.ecommerce.service;
 import com.mintech.ecommerce.dto.request.AddressRequest;
 import com.mintech.ecommerce.dto.response.AddressResponse;
 
+import java.util.UUID;
+
 public interface AddressService {
 
     AddressResponse createAddress(AddressRequest request);
 
-    AddressResponse getAddressById(Long id);
+    AddressResponse getAddressById(UUID id);
 
-    AddressResponse updateAddress(Long id, AddressRequest request);
+    AddressResponse updateAddress(UUID id, AddressRequest request);
 
     AddressResponse addAddressForUser(String email, AddressRequest request);
 
-    void deleteAddress(Long id);
-
+    void deleteAddress(UUID id);
 }

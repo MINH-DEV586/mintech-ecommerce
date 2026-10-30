@@ -4,16 +4,17 @@ import com.mintech.ecommerce.dto.request.ProductVariantRequest;
 import com.mintech.ecommerce.dto.response.ProductVariantResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductVariantService {
 
-    ProductVariantResponse createVariant(Long productId, ProductVariantRequest request);
+    ProductVariantResponse createVariant(UUID productId, ProductVariantRequest request);
 
-    List<ProductVariantResponse> getVariantsByProductId(Long productId);
+    List<ProductVariantResponse> getVariantsByProductId(UUID productId);
 
-    ProductVariantResponse getVariantById(Long id);
+    ProductVariantResponse getVariantById(UUID id);
 
-    ProductVariantResponse updateVariant(Long id, ProductVariantRequest request);
+    ProductVariantResponse updateVariant(UUID id, ProductVariantRequest request);
 
-    void deleteVariant(Long id);
+    void deleteVariant(UUID id);
 }
