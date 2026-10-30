@@ -43,7 +43,6 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
-    // Cập nhật số lượng item trong giỏ
     @PutMapping("/items/{cartItemId}")
     public ResponseEntity<CartResponse> updateCartItem(
             Authentication authentication,
@@ -53,7 +52,6 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
-    // Xóa 1 item khỏi giỏ
     @DeleteMapping("/items/{cartItemId}")
     public ResponseEntity<CartResponse> removeCartItem(
             Authentication authentication,
