@@ -45,7 +45,6 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .deliveryDate(request.getDeliveryDate())
                 .build();
 
-        // Đồng bộ trạng thái đơn hàng sang SHIPPING
         order.setOrderStatus("SHIPPING");
         orderRepository.save(order);
 
@@ -75,7 +74,6 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipment.setStatus(status.toUpperCase());
         if ("DELIVERED".equalsIgnoreCase(status)) {
             shipment.setDeliveryDate(LocalDateTime.now());
-            // Cập nhật đơn hàng hoàn thành
             Order order = shipment.getOrder();
             if (order != null) {
                 order.setOrderStatus("DELIVERED");

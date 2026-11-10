@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PaymentService {
-    PaymentResponse processPayment(PaymentRequest request);
-    List<PaymentResponse> getPaymentsByOrderId(UUID orderId);
-    PaymentResponse getPaymentById(UUID id);
+    PaymentResponse processPayment(String email, PaymentRequest request);
+    List<PaymentResponse> getPaymentsByOrderId(String email, UUID orderId);
+    PaymentResponse getPaymentById(String email, UUID id);
 }
 

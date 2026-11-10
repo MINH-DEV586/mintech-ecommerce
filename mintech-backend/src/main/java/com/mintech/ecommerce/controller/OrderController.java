@@ -30,7 +30,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    // Đặt hàng (checkout từ giỏ hàng hoặc danh sách items cụ thể)
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(
             Authentication authentication,
@@ -39,14 +38,12 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // Xem lịch sử đơn hàng của người dùng hiện tại
     @GetMapping("/my-orders")
     public ResponseEntity<List<OrderResponse>> getMyOrders(Authentication authentication) {
         List<OrderResponse> response = orderService.getMyOrders(authentication.getName());
         return ResponseEntity.ok(response);
     }
 
-    // Xem chi tiết đơn hàng theo ID (chính chủ hoặc ADMIN)
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrderById(
             Authentication authentication,
@@ -55,7 +52,6 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    // Hủy đơn hàng (khi đơn đang ở trạng thái PENDING hoặc CONFIRMED)
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<OrderResponse> cancelOrder(
             Authentication authentication,
@@ -64,7 +60,6 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    // ADMIN: Xem tất cả các đơn hàng trong hệ thống (có thể lọc theo ?status=PENDING, etc.)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrders(
@@ -73,7 +68,6 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    // ADMIN: Cập nhật trạng thái đơn hàng và thanh toán
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<OrderResponse> updateOrderStatus(

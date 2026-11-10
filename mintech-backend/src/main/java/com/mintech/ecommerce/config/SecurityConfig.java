@@ -62,7 +62,6 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // API công khai
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/auth/register",

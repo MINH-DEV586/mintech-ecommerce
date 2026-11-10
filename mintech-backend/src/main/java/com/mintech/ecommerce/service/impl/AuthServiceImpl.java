@@ -33,12 +33,10 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public UserResponse register(RegisterRequest request) {
 
-        // 1. Kiểm tra email
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email đã tồn tại");
         }
 
-        // 2. Tạo User
         User user = new User();
 
         user.setFullName(request.getFullName());

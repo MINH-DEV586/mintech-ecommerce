@@ -33,19 +33,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 1. Lấy Authorization Header
         String authHeader = request.getHeader("Authorization");
 
-        // 2. Kiểm tra Bearer Token
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 3. Lấy JWT
         String jwt = authHeader.substring(7);
 
-        // 4. Lấy email từ JWT
         String email;
 
         try {
@@ -96,7 +92,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        // 10. Cho Request đi tiếp
         filterChain.doFilter(request, response);
     }
 }

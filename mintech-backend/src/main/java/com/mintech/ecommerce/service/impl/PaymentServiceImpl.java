@@ -8,13 +8,17 @@ import com.mintech.ecommerce.repository.OrderRepository;
 import com.mintech.ecommerce.repository.PaymentRepository;
 import com.mintech.ecommerce.service.PaymentService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,51 +31,55 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentResponse processPayment(PaymentRequest request) {
-        Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại với ID: " + request.getOrderId()));
+    public PaymentResponse processPayment(String email, PaymentRequest request) {
+        Order order = orderRepository.findByIdAndUserEmail(request.getOrderId(), email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Đơn hàng không tồn tại"));
 
-        String method = request.getPaymentMethod().toUpperCase();
-        String paymentStatus;
-
-        // Nếu phương thức là COD -> Trạng thái UNPAID (chờ giao hàng trả tiền)
-        // Nếu chuyển khoản hoặc cổng thanh toán giả lập -> SUCCESS
-        if ("COD".equalsIgnoreCase(method)) {
-            paymentStatus = "PENDING";
-            order.setPaymentStatus("UNPAID");
-        } else {
-            paymentStatus = "SUCCESS";
-            order.setPaymentStatus("PAID");
+        if ("PAID".equals(order.getPaymentStatus()) || "CANCELLED".equals(order.getOrderStatus())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Đơn hàng không thể thanh toán");
         }
-        orderRepository.save(order);
 
-        String txnId = request.getTransactionId();
-        if (txnId == null || txnId.isBlank()) {
-            txnId = "TXN-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String method = request.getPaymentMethod().trim().toUpperCase(Locale.ROOT);
+        if (!Set.of("COD", "VNPAY", "MOMO", "BANK_TRANSFER").contains(method)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phương thức thanh toán không hợp lệ");
+        }
+        if (order.getTotalAmount().compareTo(request.getAmount()) != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số tiền không khớp với đơn hàng");
+        }
+
+        Optional<PayMent> pending = paymentRepository
+                .findFirstByOrderIdAndPaymentMethodAndStatusOrderByPaymentDateDesc(order.getId(), method, "PENDING");
+        if (pending.isPresent() && pending.get().getAmount().compareTo(order.getTotalAmount()) == 0) {
+            return mapToResponse(pending.get());
         }
 
         PayMent payment = new PayMent();
         payment.setOrder(order);
         payment.setPaymentMethod(method);
-        payment.setAmount(request.getAmount());
-        payment.setStatus(paymentStatus);
-        payment.setTransactionId(txnId);
+        payment.setAmount(order.getTotalAmount());
+        payment.setStatus("PENDING");
+        payment.setTransactionId("TXN-" + UUID.randomUUID());
         payment.setPaymentDate(LocalDateTime.now());
 
         return mapToResponse(paymentRepository.save(payment));
     }
 
     @Override
-    public List<PaymentResponse> getPaymentsByOrderId(UUID orderId) {
+    @Transactional
+    public List<PaymentResponse> getPaymentsByOrderId(String email, UUID orderId) {
+        if (!orderRepository.existsByIdAndUserEmail(orderId, email)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Đơn hàng không tồn tại");
+        }
         return paymentRepository.findByOrderId(orderId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PaymentResponse getPaymentById(UUID id) {
-        PayMent payment = paymentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Giao dịch thanh toán không tồn tại với ID: " + id));
+    @Transactional
+    public PaymentResponse getPaymentById(String email, UUID id) {
+        PayMent payment = paymentRepository.findByIdAndOrderUserEmail(id, email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Giao dịch thanh toán không tồn tại"));
         return mapToResponse(payment);
     }
 

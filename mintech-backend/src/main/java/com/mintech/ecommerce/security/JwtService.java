@@ -21,7 +21,6 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    // Lấy khóa bí mật
     private SecretKey getSigningKey() {
 
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
@@ -29,7 +28,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Tạo JWT
     public String generateToken(String email) {
 
         return Jwts.builder()
@@ -41,7 +39,6 @@ public class JwtService {
                 .compact();
     }
 
-    // Lấy thông tin từ JWT
     private Claims extractAllClaims(String token) {
 
         return Jwts.parser()
@@ -51,13 +48,11 @@ public class JwtService {
                 .getPayload();
     }
 
-    // Lấy email trong JWT
     public String extractEmail(String token) {
 
         return extractAllClaims(token).getSubject();
     }
 
-    // Kiểm tra token hợp lệ
     public boolean isTokenValid(String token, String email) {
 
         try {

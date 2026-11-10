@@ -20,11 +20,11 @@ public class ShipmentRequest {
     private UUID orderId;
 
     @NotBlank(message = "Đơn vị vận chuyển không được để trống")
-    private String carrier; // GHN, GHTK, ViettelPost, J&T, ShopeeExpress
+    private String carrier;
 
     private String trackingNumber;
 
-    private String status; // PREPARING, PICKED_UP, SHIPPING, DELIVERED, RETURNED
+    private String status;
 
     private LocalDateTime deliveryDate;
 }

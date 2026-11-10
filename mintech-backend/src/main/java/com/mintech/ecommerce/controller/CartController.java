@@ -27,14 +27,12 @@ public class CartController {
 
     private final CartService cartService;
 
-    // Xem giỏ hàng của mình
     @GetMapping
     public ResponseEntity<CartResponse> getMyCart(Authentication authentication) {
         CartResponse response = cartService.getMyCart(authentication.getName());
         return ResponseEntity.ok(response);
     }
 
-    // Thêm sản phẩm vào giỏ
     @PostMapping("/items")
     public ResponseEntity<CartResponse> addToCart(
             Authentication authentication,
@@ -60,7 +58,6 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
-    // Xóa toàn bộ giỏ hàng
     @DeleteMapping
     public ResponseEntity<Void> clearCart(Authentication authentication) {
         cartService.clearCart(authentication.getName());

@@ -30,13 +30,11 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    // Xem danh sách đánh giá công khai của 1 sản phẩm
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<ReviewResponse>> getReviewsByProduct(@PathVariable UUID productId) {
         return ResponseEntity.ok(reviewService.getReviewsByProduct(productId));
     }
 
-    // Khách hàng tạo đánh giá mới
     @PostMapping
     public ResponseEntity<ReviewResponse> createReview(
             Authentication authentication,
@@ -45,13 +43,11 @@ public class ReviewController {
                 .body(reviewService.createReview(authentication.getName(), request));
     }
 
-    // Khách hàng xem các đánh giá của bản thân
     @GetMapping("/my-reviews")
     public ResponseEntity<List<ReviewResponse>> getMyReviews(Authentication authentication) {
         return ResponseEntity.ok(reviewService.getMyReviews(authentication.getName()));
     }
 
-    // Xóa đánh giá (chính chủ hoặc ADMIN)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(
             Authentication authentication,
@@ -60,7 +56,6 @@ public class ReviewController {
         return ResponseEntity.noContent().build();
     }
 
-    // ADMIN: Ẩn/Hiện đánh giá
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<ReviewResponse> updateReviewStatus(

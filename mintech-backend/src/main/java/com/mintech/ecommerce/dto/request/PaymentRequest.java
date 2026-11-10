@@ -21,11 +21,11 @@ public class PaymentRequest {
     private UUID orderId;
 
     @NotBlank(message = "Phương thức thanh toán không được để trống")
-    private String paymentMethod; // COD, VNPAY, MOMO, BANK_TRANSFER
+    private String paymentMethod;
 
     @NotNull(message = "Số tiền thanh toán không được để trống")
     @DecimalMin(value = "0.0", inclusive = false, message = "Số tiền thanh toán phải lớn hơn 0")
     private BigDecimal amount;
 
-    private String transactionId; // Mã giao dịch từ cổng thanh toán (nếu có)
+    private String transactionId;
 }

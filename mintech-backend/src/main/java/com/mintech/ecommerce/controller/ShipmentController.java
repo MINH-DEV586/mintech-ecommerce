@@ -28,26 +28,22 @@ public class ShipmentController {
 
     private final ShipmentService shipmentService;
 
-    // Tra cứu vận đơn qua mã tracking (Public/User)
     @GetMapping("/track/{trackingNumber}")
     public ResponseEntity<ShipmentResponse> getShipmentByTrackingNumber(@PathVariable String trackingNumber) {
         return ResponseEntity.ok(shipmentService.getShipmentByTrackingNumber(trackingNumber));
     }
 
-    // Xem thông tin vận chuyển của một đơn hàng
     @GetMapping("/order/{orderId}")
     public ResponseEntity<List<ShipmentResponse>> getShipmentsByOrderId(@PathVariable UUID orderId) {
         return ResponseEntity.ok(shipmentService.getShipmentsByOrderId(orderId));
     }
 
-    // ADMIN: Tạo vận đơn mới cho đơn hàng
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ShipmentResponse> createShipment(@Valid @RequestBody ShipmentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(shipmentService.createShipment(request));
     }
 
-    // ADMIN: Cập nhật trạng thái vận đơn (PREPARING, PICKED_UP, SHIPPING, DELIVERED, RETURNED)
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<ShipmentResponse> updateShipmentStatus(

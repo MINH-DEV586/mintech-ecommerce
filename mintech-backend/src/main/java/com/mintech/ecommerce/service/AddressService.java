@@ -7,13 +7,11 @@ import java.util.UUID;
 
 public interface AddressService {
 
-    AddressResponse createAddress(AddressRequest request);
+    AddressResponse createAddress(String email, AddressRequest request);
 
-    AddressResponse getAddressById(UUID id);
+    AddressResponse getAddressById(String email, UUID id);
 
-    AddressResponse updateAddress(UUID id, AddressRequest request);
+    AddressResponse updateAddress(String email, UUID id, AddressRequest request);
 
-    AddressResponse addAddressForUser(String email, AddressRequest request);
-
-    void deleteAddress(UUID id);
+    void deleteAddress(String email, UUID id);
 }

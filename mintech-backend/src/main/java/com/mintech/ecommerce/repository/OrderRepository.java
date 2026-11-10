@@ -1,6 +1,8 @@
 package com.mintech.ecommerce.repository;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 import com.mintech.ecommerce.entity.Order;
 
@@ -10,6 +12,11 @@ import java.util.UUID;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
+    boolean existsByIdAndUserEmail(UUID id, String email);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Order> findByIdAndUserEmail(UUID id, String email);
+
     List<Order> findByUserIdOrderByCreatedAtDesc(UUID userId);
     List<Order> findAllByOrderByCreatedAtDesc();
     Optional<Order> findByOrderCode(String orderCode);

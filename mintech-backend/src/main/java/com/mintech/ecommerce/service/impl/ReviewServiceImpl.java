@@ -48,12 +48,10 @@ public class ReviewServiceImpl implements ReviewService {
         OrderItem orderItem = orderItemRepository.findById(request.getOrderItemId())
                 .orElseThrow(() -> new EntityNotFoundException("Mục đơn hàng không tồn tại"));
 
-        // Kiểm tra xem đơn hàng có phải của user này không
         if (!orderItem.getOrder().getUser().getId().equals(user.getId())) {
             throw new SecurityException("Bạn chỉ có thể đánh giá sản phẩm trong đơn hàng của chính mình");
         }
 
-        // Đã đánh giá đơn hàng này chưa
         if (reviewRepository.existsByUserIdAndOrderItemId(user.getId(), orderItem.getId())) {
             throw new IllegalArgumentException("Bạn đã đánh giá sản phẩm này cho đơn hàng này rồi");
         }

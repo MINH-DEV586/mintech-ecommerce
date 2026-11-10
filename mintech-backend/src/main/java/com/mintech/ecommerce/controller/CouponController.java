@@ -30,7 +30,6 @@ public class CouponController {
 
     private final CouponService couponService;
 
-    // Khách hàng / Public kiểm tra tính hợp lệ của mã giảm giá
     @GetMapping("/validate")
     public ResponseEntity<CouponResponse> validateCoupon(
             @RequestParam String code,
@@ -38,28 +37,24 @@ public class CouponController {
         return ResponseEntity.ok(couponService.validateCoupon(code, amount));
     }
 
-    // ADMIN: Xem toàn bộ mã giảm giá
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<CouponResponse>> getAllCoupons() {
         return ResponseEntity.ok(couponService.getAllCoupons());
     }
 
-    // ADMIN: Chi tiết mã giảm giá
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CouponResponse> getCouponById(@PathVariable UUID id) {
         return ResponseEntity.ok(couponService.getCouponById(id));
     }
 
-    // ADMIN: Tạo mã giảm giá mới
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CouponRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(couponService.createCoupon(request));
     }
 
-    // ADMIN: Sửa mã giảm giá
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CouponResponse> updateCoupon(
@@ -68,7 +63,6 @@ public class CouponController {
         return ResponseEntity.ok(couponService.updateCoupon(id, request));
     }
 
-    // ADMIN: Xóa mã giảm giá
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCoupon(@PathVariable UUID id) {

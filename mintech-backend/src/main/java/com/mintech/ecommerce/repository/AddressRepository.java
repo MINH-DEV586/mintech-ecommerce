@@ -12,4 +12,5 @@ import com.mintech.ecommerce.entity.Address;
 public interface AddressRepository extends JpaRepository<Address, UUID> {
     List<Address> findByUserId(UUID userId);
     Optional<Address> findByUserIdAndIsDefaultTrue(UUID userId);
+    Optional<Address> findByIdAndUserEmail(UUID id, String email);
 }

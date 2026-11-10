@@ -66,7 +66,6 @@ public class OrderServiceImpl implements OrderService {
         boolean isFromCart = (request.getItems() == null || request.getItems().isEmpty());
 
         if (isFromCart) {
-            // Đặt hàng từ giỏ hàng hiện tại của người dùng
             Cart cart = cartRepository.findByUserId(user.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Giỏ hàng của bạn đang trống"));
 
@@ -83,7 +82,6 @@ public class OrderServiceImpl implements OrderService {
                             "Sản phẩm '" + variant.getProduct().getName() + " (" + variant.getColor() + ")' không đủ số lượng tồn kho (còn: " + variant.getStockQuantity() + ")");
                 }
 
-                // Trừ kho
                 variant.setStockQuantity(variant.getStockQuantity() - qty);
                 productVariantRepository.save(variant);
 
@@ -102,12 +100,10 @@ public class OrderServiceImpl implements OrderService {
                 orderItems.add(orderItem);
             }
 
-            // Dọn sạch giỏ hàng
             cart.getCartItems().clear();
             cartRepository.save(cart);
 
         } else {
-            // Đặt hàng theo danh sách items truyền lên
             for (OrderItemRequest itemReq : request.getItems()) {
                 ProductVariant variant = productVariantRepository.findById(itemReq.getProductVariantId())
                         .orElseThrow(() -> new EntityNotFoundException("Biến thể sản phẩm không tồn tại với ID: " + itemReq.getProductVariantId()));
@@ -118,7 +114,6 @@ public class OrderServiceImpl implements OrderService {
                             "Sản phẩm '" + variant.getProduct().getName() + " (" + variant.getColor() + ")' không đủ số lượng tồn kho (còn: " + variant.getStockQuantity() + ")");
                 }
 
-                // Trừ kho
                 variant.setStockQuantity(variant.getStockQuantity() - qty);
                 productVariantRepository.save(variant);
 
@@ -136,7 +131,6 @@ public class OrderServiceImpl implements OrderService {
 
                 orderItems.add(orderItem);
 
-                // Nếu item này có trong cart thì xóa khỏi cart
                 Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());
                 if (optionalCart.isPresent()) {
                     Cart cart = optionalCart.get();
@@ -149,7 +143,6 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        // Tính giảm giá nếu có Coupon
         BigDecimal discountAmount = BigDecimal.ZERO;
         if (request.getCouponCode() != null && !request.getCouponCode().isBlank()) {
             discountAmount = applyCoupon(request.getCouponCode().trim(), subtotal);
@@ -264,7 +257,6 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("Đơn hàng chỉ có thể hủy khi đang ở trạng thái PENDING hoặc CONFIRMED");
         }
 
-        // Hoàn lại số lượng tồn kho
         for (OrderItem item : order.getOrderItems()) {
             ProductVariant variant = item.getProductVariant();
             if (variant != null) {
@@ -298,7 +290,6 @@ public class OrderServiceImpl implements OrderService {
 
         if (request.getOrderStatus() != null) {
             String newStatus = request.getOrderStatus().toUpperCase();
-            // Nếu chuyển sang CANCELLED từ trạng thái chưa hủy thì hoàn kho
             if ("CANCELLED".equals(newStatus) && !"CANCELLED".equals(order.getOrderStatus())) {
                 for (OrderItem item : order.getOrderItems()) {
                     ProductVariant variant = item.getProductVariant();
