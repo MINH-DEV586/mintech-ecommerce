@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.InvalidRequestException;
 import com.mintech.ecommerce.exception.ConflictException;
 import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.OrderItemRequest;
@@ -69,10 +70,10 @@ public class OrderServiceImpl implements OrderService {
 
         if (isFromCart) {
             Cart cart = cartRepository.findByUserId(user.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Giỏ hàng của bạn đang trống"));
+                    .orElseThrow(() -> new InvalidRequestException("Giỏ hàng của bạn đang trống"));
 
             if (cart.getCartItems().isEmpty()) {
-                throw new IllegalArgumentException("Giỏ hàng của bạn đang trống");
+                throw new InvalidRequestException("Giỏ hàng của bạn đang trống");
             }
 
             for (CartItem cartItem : new ArrayList<>(cart.getCartItems())) {
@@ -192,19 +193,19 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime now = LocalDateTime.now();
 
         if (coupon.getStatus() != Coupon.CouponStatus.ACTIVE) {
-            throw new IllegalArgumentException("Mã giảm giá hiện không còn hiệu lực");
+            throw new InvalidRequestException("Mã giảm giá hiện không còn hiệu lực");
         }
         if (coupon.getStartDate() != null && now.isBefore(coupon.getStartDate())) {
-            throw new IllegalArgumentException("Mã giảm giá chưa đến ngày áp dụng");
+            throw new InvalidRequestException("Mã giảm giá chưa đến ngày áp dụng");
         }
         if (coupon.getEndDate() != null && now.isAfter(coupon.getEndDate())) {
-            throw new IllegalArgumentException("Mã giảm giá đã hết hạn");
+            throw new InvalidRequestException("Mã giảm giá đã hết hạn");
         }
         if (coupon.getUsageLimit() != null && coupon.getUsedCount() >= coupon.getUsageLimit()) {
-            throw new IllegalArgumentException("Mã giảm giá đã đạt giới hạn lượt sử dụng");
+            throw new InvalidRequestException("Mã giảm giá đã đạt giới hạn lượt sử dụng");
         }
         if (coupon.getMinOrderAmount() != null && subtotal.compareTo(coupon.getMinOrderAmount()) < 0) {
-            throw new IllegalArgumentException("Đơn hàng phải tối thiểu " + coupon.getMinOrderAmount() + " để áp dụng mã này");
+            throw new InvalidRequestException("Đơn hàng phải tối thiểu " + coupon.getMinOrderAmount() + " để áp dụng mã này");
         }
 
         BigDecimal discount = BigDecimal.ZERO;

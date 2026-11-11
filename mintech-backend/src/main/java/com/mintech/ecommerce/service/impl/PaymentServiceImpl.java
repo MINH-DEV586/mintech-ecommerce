@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.InvalidRequestException;
 import com.mintech.ecommerce.exception.ConflictException;
 import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.PaymentRequest;
@@ -13,8 +14,6 @@ import com.mintech.ecommerce.service.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,10 +42,10 @@ public class PaymentServiceImpl implements PaymentService {
 
         String method = request.getPaymentMethod().trim().toUpperCase(Locale.ROOT);
         if (!Set.of("COD", "VNPAY", "MOMO", "BANK_TRANSFER").contains(method)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phương thức thanh toán không hợp lệ");
+            throw new InvalidRequestException("Phương thức thanh toán không hợp lệ");
         }
         if (order.getTotalAmount().compareTo(request.getAmount()) != 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số tiền không khớp với đơn hàng");
+            throw new InvalidRequestException("Số tiền không khớp với đơn hàng");
         }
 
         Optional<PayMent> pending = paymentRepository

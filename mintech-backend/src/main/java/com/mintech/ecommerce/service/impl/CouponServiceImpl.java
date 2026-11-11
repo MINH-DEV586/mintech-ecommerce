@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.InvalidRequestException;
 import com.mintech.ecommerce.exception.ConflictException;
 import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.CouponRequest;
@@ -102,19 +103,19 @@ public class CouponServiceImpl implements CouponService {
         LocalDateTime now = LocalDateTime.now();
 
         if (coupon.getStatus() != Coupon.CouponStatus.ACTIVE) {
-            throw new IllegalArgumentException("Mã giảm giá hiện không khả dụng");
+            throw new InvalidRequestException("Mã giảm giá hiện không khả dụng");
         }
         if (coupon.getStartDate() != null && now.isBefore(coupon.getStartDate())) {
-            throw new IllegalArgumentException("Mã giảm giá chưa đến thời gian áp dụng");
+            throw new InvalidRequestException("Mã giảm giá chưa đến thời gian áp dụng");
         }
         if (coupon.getEndDate() != null && now.isAfter(coupon.getEndDate())) {
-            throw new IllegalArgumentException("Mã giảm giá đã hết hạn");
+            throw new InvalidRequestException("Mã giảm giá đã hết hạn");
         }
         if (coupon.getUsageLimit() != null && coupon.getUsedCount() >= coupon.getUsageLimit()) {
-            throw new IllegalArgumentException("Mã giảm giá đã hết lượt sử dụng");
+            throw new InvalidRequestException("Mã giảm giá đã hết lượt sử dụng");
         }
         if (coupon.getMinOrderAmount() != null && orderAmount != null && orderAmount.compareTo(coupon.getMinOrderAmount()) < 0) {
-            throw new IllegalArgumentException("Đơn hàng phải tối thiểu " + coupon.getMinOrderAmount() + " để áp dụng mã này");
+            throw new InvalidRequestException("Đơn hàng phải tối thiểu " + coupon.getMinOrderAmount() + " để áp dụng mã này");
         }
 
         return mapToResponse(coupon);
