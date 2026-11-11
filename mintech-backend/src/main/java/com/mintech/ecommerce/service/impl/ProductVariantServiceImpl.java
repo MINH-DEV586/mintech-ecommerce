@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.mintech.ecommerce.dto.request.ProductVariantRequest;
@@ -28,7 +29,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     @Transactional
     public ProductVariantResponse createVariant(UUID productId, ProductVariantRequest request) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không tồn tại"));
 
         ProductVariant variant = new ProductVariant();
         variant.setProduct(product);
@@ -52,7 +53,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     @Override
     public ProductVariantResponse getVariantById(UUID id) {
         ProductVariant variant = productVariantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Biến thể sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Biến thể sản phẩm không tồn tại"));
         return mapToResponse(variant);
     }
 
@@ -60,7 +61,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     @Transactional
     public ProductVariantResponse updateVariant(UUID id, ProductVariantRequest request) {
         ProductVariant variant = productVariantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Biến thể sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Biến thể sản phẩm không tồn tại"));
 
         variant.setSku(request.getSku());
         variant.setColor(request.getColor());

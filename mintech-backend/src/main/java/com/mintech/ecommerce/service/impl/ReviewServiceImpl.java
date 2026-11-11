@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.ReviewRequest;
 import com.mintech.ecommerce.dto.response.ReviewResponse;
 import com.mintech.ecommerce.entity.OrderItem;
@@ -13,7 +14,6 @@ import com.mintech.ecommerce.repository.ReviewRepository;
 import com.mintech.ecommerce.repository.UserRepository;
 import com.mintech.ecommerce.service.ReviewService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại với email: " + email));
     }
 
     @Override
@@ -43,10 +43,10 @@ public class ReviewServiceImpl implements ReviewService {
         User user = getUserByEmail(email);
 
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + request.getProductId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không tồn tại với ID: " + request.getProductId()));
 
         OrderItem orderItem = orderItemRepository.findById(request.getOrderItemId())
-                .orElseThrow(() -> new EntityNotFoundException("Mục đơn hàng không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Mục đơn hàng không tồn tại"));
 
         if (!orderItem.getOrder().getUser().getId().equals(user.getId())) {
             throw new SecurityException("Bạn chỉ có thể đánh giá sản phẩm trong đơn hàng của chính mình");
@@ -88,7 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public ReviewResponse updateReviewStatus(UUID id, String status) {
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Đánh giá không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Đánh giá không tồn tại với ID: " + id));
 
         review.setStatus(status.toUpperCase());
         return mapToResponse(reviewRepository.save(review));
@@ -99,7 +99,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void deleteReview(String email, UUID id) {
         User user = getUserByEmail(email);
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Đánh giá không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Đánh giá không tồn tại với ID: " + id));
 
         if (!review.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
             throw new SecurityException("Bạn không có quyền xóa đánh giá này");

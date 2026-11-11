@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.ShipmentRequest;
 import com.mintech.ecommerce.dto.response.ShipmentResponse;
 import com.mintech.ecommerce.entity.Order;
@@ -8,7 +9,6 @@ import com.mintech.ecommerce.repository.OrderRepository;
 import com.mintech.ecommerce.repository.ShipmentRepository;
 import com.mintech.ecommerce.service.ShipmentService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Transactional
     public ShipmentResponse createShipment(ShipmentRequest request) {
         Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại với ID: " + request.getOrderId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại với ID: " + request.getOrderId()));
 
         String tracking = request.getTrackingNumber();
         if (tracking == null || tracking.isBlank()) {
@@ -61,7 +61,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public ShipmentResponse getShipmentByTrackingNumber(String trackingNumber) {
         ShipMent shipment = shipmentRepository.findByTrackingNumber(trackingNumber)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy thông tin vận đơn: " + trackingNumber));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông tin vận đơn: " + trackingNumber));
         return mapToResponse(shipment);
     }
 
@@ -69,7 +69,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Transactional
     public ShipmentResponse updateShipmentStatus(UUID id, String status) {
         ShipMent shipment = shipmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Vận đơn không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Vận đơn không tồn tại với ID: " + id));
 
         shipment.setStatus(status.toUpperCase());
         if ("DELIVERED".equalsIgnoreCase(status)) {

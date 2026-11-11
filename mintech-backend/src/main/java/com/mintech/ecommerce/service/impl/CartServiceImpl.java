@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.CartRequest;
 import com.mintech.ecommerce.dto.response.CartResponse;
 import com.mintech.ecommerce.entity.Cart;
@@ -42,7 +43,7 @@ public class CartServiceImpl implements CartService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
     }
 
     @Override
@@ -59,7 +60,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = getOrCreateCart(user);
 
         ProductVariant variant = productVariantRepository.findById(request.getProductVariantId())
-                .orElseThrow(() -> new RuntimeException("Biến thể sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Biến thể sản phẩm không tồn tại"));
 
         Optional<CartItem> existingItem = cartItemRepository
                 .findByCartIdAndProductVariantId(cart.getId(), variant.getId());
@@ -88,7 +89,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = getOrCreateCart(user);
 
         CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không có trong giỏ hàng"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không có trong giỏ hàng"));
 
         if (!item.getCart().getId().equals(cart.getId())) {
             throw new RuntimeException("Bạn không có quyền sửa item này");
@@ -107,7 +108,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = getOrCreateCart(user);
 
         CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không có trong giỏ hàng"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không có trong giỏ hàng"));
 
         if (!item.getCart().getId().equals(cart.getId())) {
             throw new RuntimeException("Bạn không có quyền xóa item này");

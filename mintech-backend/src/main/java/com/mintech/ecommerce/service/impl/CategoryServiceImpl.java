@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.mintech.ecommerce.repository.CategoryRepository;
@@ -51,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryResponse updateCategory(UUID id, CategoryRequest request) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Danh mục không tồn tại"));
         category.setName(request.getName());
         category.setSlug(request.getSlug());
         category.setDescription(request.getDescription());
@@ -68,7 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Danh mục không tồn tại"));
         return mapToResponse(category);
     }
 }

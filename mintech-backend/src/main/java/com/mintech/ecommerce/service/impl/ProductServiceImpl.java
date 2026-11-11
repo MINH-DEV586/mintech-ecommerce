@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.ProductImageRequest;
 import com.mintech.ecommerce.dto.request.ProductRequest;
 import com.mintech.ecommerce.dto.request.ProductSpecificationRequest;
@@ -22,7 +23,6 @@ import com.mintech.ecommerce.repository.ProductSpecificationRepository;
 import com.mintech.ecommerce.repository.ProductVariantRepository;
 import com.mintech.ecommerce.service.ProductService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -48,12 +48,12 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse createProduct(ProductRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
 
         Brand brand = null;
         if (request.getBrandId() != null) {
             brand = brandRepository.findById(request.getBrandId())
-                    .orElseThrow(() -> new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + request.getBrandId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Thương hiệu không tồn tại với ID: " + request.getBrandId()));
         }
 
         Product product = new Product();
@@ -118,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse getProductById(UUID id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không tồn tại với ID: " + id));
         return mapToResponse(product);
     }
 
@@ -126,15 +126,15 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse updateProduct(UUID id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không tồn tại với ID: " + id));
 
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Danh mục không tồn tại với ID: " + request.getCategoryId()));
 
         Brand brand = null;
         if (request.getBrandId() != null) {
             brand = brandRepository.findById(request.getBrandId())
-                    .orElseThrow(() -> new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + request.getBrandId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Thương hiệu không tồn tại với ID: " + request.getBrandId()));
         }
 
         product.setName(request.getName());
@@ -153,7 +153,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void deleteProduct(UUID id) {
         if (!productRepository.existsById(id)) {
-            throw new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + id);
+            throw new ResourceNotFoundException("Sản phẩm không tồn tại với ID: " + id);
         }
         productRepository.deleteById(id);
     }

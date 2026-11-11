@@ -1,12 +1,12 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.CouponRequest;
 import com.mintech.ecommerce.dto.response.CouponResponse;
 import com.mintech.ecommerce.entity.Coupon;
 import com.mintech.ecommerce.repository.CouponRepository;
 import com.mintech.ecommerce.service.CouponService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CouponResponse getCouponById(UUID id) {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Mã giảm giá không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Mã giảm giá không tồn tại với ID: " + id));
         return mapToResponse(coupon);
     }
 
@@ -65,7 +65,7 @@ public class CouponServiceImpl implements CouponService {
     @Transactional
     public CouponResponse updateCoupon(UUID id, CouponRequest request) {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Mã giảm giá không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Mã giảm giá không tồn tại với ID: " + id));
 
         coupon.setDiscountType(request.getDiscountType());
         coupon.setDiscountValue(request.getDiscountValue());
@@ -88,7 +88,7 @@ public class CouponServiceImpl implements CouponService {
     @Transactional
     public void deleteCoupon(UUID id) {
         if (!couponRepository.existsById(id)) {
-            throw new EntityNotFoundException("Mã giảm giá không tồn tại với ID: " + id);
+            throw new ResourceNotFoundException("Mã giảm giá không tồn tại với ID: " + id);
         }
         couponRepository.deleteById(id);
     }
@@ -96,7 +96,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CouponResponse validateCoupon(String code, BigDecimal orderAmount) {
         Coupon coupon = couponRepository.findByCode(code.trim().toUpperCase())
-                .orElseThrow(() -> new EntityNotFoundException("Mã giảm giá không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Mã giảm giá không tồn tại"));
 
         LocalDateTime now = LocalDateTime.now();
 

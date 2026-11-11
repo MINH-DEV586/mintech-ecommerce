@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.OrderItemRequest;
 import com.mintech.ecommerce.dto.request.OrderRequest;
 import com.mintech.ecommerce.dto.request.OrderStatusUpdateRequest;
@@ -21,7 +22,6 @@ import com.mintech.ecommerce.repository.ProductVariantRepository;
 import com.mintech.ecommerce.repository.UserRepository;
 import com.mintech.ecommerce.service.OrderService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại với email: " + email));
     }
 
     private String generateOrderCode() {
@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
         } else {
             for (OrderItemRequest itemReq : request.getItems()) {
                 ProductVariant variant = productVariantRepository.findById(itemReq.getProductVariantId())
-                        .orElseThrow(() -> new EntityNotFoundException("Biến thể sản phẩm không tồn tại với ID: " + itemReq.getProductVariantId()));
+                        .orElseThrow(() -> new ResourceNotFoundException("Biến thể sản phẩm không tồn tại với ID: " + itemReq.getProductVariantId()));
 
                 int qty = itemReq.getQuantity();
                 if (variant.getStockQuantity() < qty) {
@@ -183,7 +183,7 @@ public class OrderServiceImpl implements OrderService {
     private BigDecimal applyCoupon(String couponCode, BigDecimal subtotal) {
         Optional<Coupon> optionalCoupon = couponRepository.findByCode(couponCode);
         if (optionalCoupon.isEmpty()) {
-            throw new IllegalArgumentException("Mã giảm giá không tồn tại");
+            throw new ResourceNotFoundException("Mã giảm giá không tồn tại");
         }
 
         Coupon coupon = optionalCoupon.get();
@@ -233,7 +233,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse getOrderById(String email, UUID id) {
         User user = getUserByEmail(email);
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại"));
 
         if (!order.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
             throw new SecurityException("Bạn không có quyền xem đơn hàng này");
@@ -247,7 +247,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse cancelOrder(String email, UUID id) {
         User user = getUserByEmail(email);
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại"));
 
         if (!order.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
             throw new SecurityException("Bạn không có quyền thao tác trên đơn hàng này");
@@ -286,7 +286,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponse updateOrderStatus(UUID id, OrderStatusUpdateRequest request) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Đơn hàng không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại"));
 
         if (request.getOrderStatus() != null) {
             String newStatus = request.getOrderStatus().toUpperCase();

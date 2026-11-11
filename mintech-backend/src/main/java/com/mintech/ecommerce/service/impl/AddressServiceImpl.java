@@ -1,8 +1,7 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.mintech.ecommerce.repository.AddressRepository;
 import com.mintech.ecommerce.repository.UserRepository;
@@ -27,7 +26,7 @@ public class AddressServiceImpl implements AddressService {
     public AddressResponse createAddress(String email, AddressRequest request) {
         Address address = new Address();
         address.setUser(userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tài khoản không tồn tại")));
+                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại")));
         address.setRecipientName(request.getRecipientName());
         address.setPhone(request.getPhone());
         address.setProvince(request.getProvince());
@@ -42,7 +41,7 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     public AddressResponse getAddressById(String email, UUID id) {
         Address address = addressRepository.findByIdAndUserEmail(id, email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Địa chỉ không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Địa chỉ không tồn tại"));
         return mapToResponse(address);
     }
 
@@ -50,7 +49,7 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     public AddressResponse updateAddress(String email, UUID id, AddressRequest request) {
         Address address = addressRepository.findByIdAndUserEmail(id, email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Địa chỉ không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Địa chỉ không tồn tại"));
         address.setRecipientName(request.getRecipientName());
         address.setPhone(request.getPhone());
         address.setProvince(request.getProvince());
@@ -65,7 +64,7 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     public void deleteAddress(String email, UUID id) {
         Address address = addressRepository.findByIdAndUserEmail(id, email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Địa chỉ không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Địa chỉ không tồn tại"));
         addressRepository.delete(address);
     }
 

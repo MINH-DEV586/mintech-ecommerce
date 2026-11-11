@@ -1,12 +1,12 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.BrandRequest;
 import com.mintech.ecommerce.dto.response.BrandResponse;
 import com.mintech.ecommerce.entity.Brand;
 import com.mintech.ecommerce.repository.BrandRepository;
 import com.mintech.ecommerce.service.BrandService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public BrandResponse getBrandById(UUID id) {
         Brand brand = brandRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Thương hiệu không tồn tại với ID: " + id));
         return mapToResponse(brand);
     }
 
@@ -51,7 +51,7 @@ public class BrandServiceImpl implements BrandService {
     @Transactional
     public BrandResponse updateBrand(UUID id, BrandRequest request) {
         Brand brand = brandRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Thương hiệu không tồn tại với ID: " + id));
 
         brand.setName(request.getName());
         if (request.getSlug() != null) {
@@ -69,7 +69,7 @@ public class BrandServiceImpl implements BrandService {
     @Transactional
     public void deleteBrand(UUID id) {
         if (!brandRepository.existsById(id)) {
-            throw new EntityNotFoundException("Thương hiệu không tồn tại với ID: " + id);
+            throw new ResourceNotFoundException("Thương hiệu không tồn tại với ID: " + id);
         }
         brandRepository.deleteById(id);
     }

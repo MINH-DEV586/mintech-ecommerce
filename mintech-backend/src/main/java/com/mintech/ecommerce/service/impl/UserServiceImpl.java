@@ -1,12 +1,12 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.UserRequest;
 import com.mintech.ecommerce.dto.response.UserResponse;
 import com.mintech.ecommerce.entity.User;
 import com.mintech.ecommerce.repository.UserRepository;
 import com.mintech.ecommerce.service.UserService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getMe(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại: " + email));
         return mapToResponse(user);
     }
 
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse updateProfile(String email, UserRequest request) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại: " + email));
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         return mapToResponse(userRepository.save(user));
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse updatePassword(UUID id, String password) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại với ID: " + id));
         user.setPasswordHash(passwordEncoder.encode(password));
         return mapToResponse(userRepository.save(user));
     }
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getById(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại với ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại với ID: " + id));
         return mapToResponse(user);
     }
 

@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.PaymentRequest;
 import com.mintech.ecommerce.dto.response.PaymentResponse;
 import com.mintech.ecommerce.entity.Order;
@@ -33,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentResponse processPayment(String email, PaymentRequest request) {
         Order order = orderRepository.findByIdAndUserEmail(request.getOrderId(), email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Đơn hàng không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại"));
 
         if ("PAID".equals(order.getPaymentStatus()) || "CANCELLED".equals(order.getOrderStatus())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Đơn hàng không thể thanh toán");
@@ -68,7 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public List<PaymentResponse> getPaymentsByOrderId(String email, UUID orderId) {
         if (!orderRepository.existsByIdAndUserEmail(orderId, email)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Đơn hàng không tồn tại");
+            throw new ResourceNotFoundException("Đơn hàng không tồn tại");
         }
         return paymentRepository.findByOrderId(orderId).stream()
                 .map(this::mapToResponse)
@@ -79,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentResponse getPaymentById(String email, UUID id) {
         PayMent payment = paymentRepository.findByIdAndOrderUserEmail(id, email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Giao dịch thanh toán không tồn tại"));
+                .orElseThrow(() -> new ResourceNotFoundException("Giao dịch thanh toán không tồn tại"));
         return mapToResponse(payment);
     }
 
