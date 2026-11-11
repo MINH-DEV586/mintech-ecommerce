@@ -15,6 +15,7 @@ import com.mintech.ecommerce.service.CartService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -92,7 +93,7 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không có trong giỏ hàng"));
 
         if (!item.getCart().getId().equals(cart.getId())) {
-            throw new RuntimeException("Bạn không có quyền sửa item này");
+            throw new AccessDeniedException("Bạn không có quyền sửa item này");
         }
 
         item.setQuantity(request.getQuantity());
@@ -111,7 +112,7 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không có trong giỏ hàng"));
 
         if (!item.getCart().getId().equals(cart.getId())) {
-            throw new RuntimeException("Bạn không có quyền xóa item này");
+            throw new AccessDeniedException("Bạn không có quyền xóa item này");
         }
 
         cart.getCartItems().remove(item);

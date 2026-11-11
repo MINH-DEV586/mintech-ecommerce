@@ -24,6 +24,7 @@ import com.mintech.ecommerce.service.OrderService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -236,7 +237,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại"));
 
         if (!order.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            throw new SecurityException("Bạn không có quyền xem đơn hàng này");
+            throw new AccessDeniedException("Bạn không có quyền xem đơn hàng này");
         }
 
         return mapToResponse(order);
@@ -250,7 +251,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại"));
 
         if (!order.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            throw new SecurityException("Bạn không có quyền thao tác trên đơn hàng này");
+            throw new AccessDeniedException("Bạn không có quyền thao tác trên đơn hàng này");
         }
 
         if (!"PENDING".equalsIgnoreCase(order.getOrderStatus()) && !"CONFIRMED".equalsIgnoreCase(order.getOrderStatus())) {

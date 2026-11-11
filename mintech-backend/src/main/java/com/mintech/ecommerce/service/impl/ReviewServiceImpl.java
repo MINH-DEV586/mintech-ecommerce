@@ -16,6 +16,7 @@ import com.mintech.ecommerce.service.ReviewService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -49,7 +50,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("Mục đơn hàng không tồn tại"));
 
         if (!orderItem.getOrder().getUser().getId().equals(user.getId())) {
-            throw new SecurityException("Bạn chỉ có thể đánh giá sản phẩm trong đơn hàng của chính mình");
+            throw new AccessDeniedException("Bạn chỉ có thể đánh giá sản phẩm trong đơn hàng của chính mình");
         }
 
         if (reviewRepository.existsByUserIdAndOrderItemId(user.getId(), orderItem.getId())) {
@@ -102,7 +103,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("Đánh giá không tồn tại với ID: " + id));
 
         if (!review.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            throw new SecurityException("Bạn không có quyền xóa đánh giá này");
+            throw new AccessDeniedException("Bạn không có quyền xóa đánh giá này");
         }
 
         reviewRepository.delete(review);
