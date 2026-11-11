@@ -7,7 +7,9 @@ import com.mintech.ecommerce.dto.request.RegisterRequest;
 import com.mintech.ecommerce.dto.response.AuthResponse;
 import com.mintech.ecommerce.dto.response.UserResponse;
 import com.mintech.ecommerce.service.AuthService;
+import com.mintech.ecommerce.security.LoginRateLimiter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class AuthController {
 
     private final AuthService authService;
+    private final LoginRateLimiter loginRateLimiter;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -33,7 +36,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        if (!loginRateLimiter.tryAcquire(httpRequest.getRemoteAddr())) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).header("Retry-After", "60").build();
+        }
 
         AuthResponse response = authService.login(request);
 

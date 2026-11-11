@@ -3,6 +3,7 @@ package com.mintech.ecommerce.service.impl;
 import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.ShipmentRequest;
 import com.mintech.ecommerce.dto.response.ShipmentResponse;
+import com.mintech.ecommerce.dto.response.ShipmentTrackingResponse;
 import com.mintech.ecommerce.entity.Order;
 import com.mintech.ecommerce.entity.ShipMent;
 import com.mintech.ecommerce.repository.OrderRepository;
@@ -33,7 +34,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
         String tracking = request.getTrackingNumber();
         if (tracking == null || tracking.isBlank()) {
-            tracking = request.getCarrier().toUpperCase() + "-" + System.currentTimeMillis();
+            tracking = UUID.randomUUID().toString();
         }
 
         ShipMent shipment = ShipMent.builder()
@@ -52,17 +53,22 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     @Override
-    public List<ShipmentResponse> getShipmentsByOrderId(UUID orderId) {
+    @Transactional
+    public List<ShipmentResponse> getShipmentsByOrderId(UUID orderId, String email, boolean admin) {
+        boolean allowed = admin ? orderRepository.existsById(orderId) : orderRepository.existsByIdAndUserEmail(orderId, email);
+        if (!allowed) {
+            throw new ResourceNotFoundException("Đơn hàng không tồn tại");
+        }
         return shipmentRepository.findByOrderId(orderId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ShipmentResponse getShipmentByTrackingNumber(String trackingNumber) {
+    public ShipmentTrackingResponse getShipmentByTrackingNumber(String trackingNumber) {
         ShipMent shipment = shipmentRepository.findByTrackingNumber(trackingNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông tin vận đơn: " + trackingNumber));
-        return mapToResponse(shipment);
+                .orElseThrow(() -> new ResourceNotFoundException("Vận đơn không tồn tại"));
+        return new ShipmentTrackingResponse(shipment.getCarrier(), shipment.getStatus());
     }
 
     @Override

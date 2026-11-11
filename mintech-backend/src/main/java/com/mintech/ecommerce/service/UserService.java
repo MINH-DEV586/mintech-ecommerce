@@ -14,4 +14,6 @@ public interface UserService {
     UserResponse updatePassword(UUID id, String password);
 
     UserResponse getById(UUID id);
+
+    java.util.List<UserResponse> getAllUsers();
 }

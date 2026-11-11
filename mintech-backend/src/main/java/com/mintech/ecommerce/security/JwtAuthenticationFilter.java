@@ -2,6 +2,8 @@ package com.mintech.ecommerce.security;
 
 import java.io.IOException;
 
+import io.jsonwebtoken.Claims;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,10 +44,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String jwt = authHeader.substring(7);
 
-        String email;
+        Claims claims;
 
         try {
-            email = jwtService.extractEmail(jwt);
+            claims = jwtService.parseToken(jwt);
         } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
             response.sendError(
                     HttpServletResponse.SC_UNAUTHORIZED,
@@ -53,14 +55,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (email != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
+        String email = claims.getSubject();
+        if (email == null || claims.getExpiration() == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            return;
+        }
+
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
             try {
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                if (jwtService.isTokenValid(jwt, userDetails.getUsername())
+                if (jwtService.matchesCredentials(claims, userDetails.getPassword())
                         && userDetails.isEnabled()
                         && userDetails.isAccountNonLocked()
                         && userDetails.isAccountNonExpired()
@@ -84,7 +91,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
 
-            } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+            } catch (org.springframework.security.core.userdetails.UsernameNotFoundException
+                    | io.jsonwebtoken.JwtException e) {
                 response.sendError(
                         HttpServletResponse.SC_UNAUTHORIZED,
                         "Invalid token");

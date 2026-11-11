@@ -3,7 +3,6 @@ package com.mintech.ecommerce.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import com.mintech.ecommerce.service.CategoryService;
 import com.mintech.ecommerce.dto.request.CategoryRequest;
 import com.mintech.ecommerce.dto.response.CategoryResponse;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/categories")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class CategoryController {
 

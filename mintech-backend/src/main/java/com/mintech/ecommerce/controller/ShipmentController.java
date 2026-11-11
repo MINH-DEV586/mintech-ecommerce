@@ -2,6 +2,7 @@ package com.mintech.ecommerce.controller;
 
 import com.mintech.ecommerce.dto.request.ShipmentRequest;
 import com.mintech.ecommerce.dto.response.ShipmentResponse;
+import com.mintech.ecommerce.dto.response.ShipmentTrackingResponse;
 import com.mintech.ecommerce.service.ShipmentService;
 
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,13 +31,16 @@ public class ShipmentController {
     private final ShipmentService shipmentService;
 
     @GetMapping("/track/{trackingNumber}")
-    public ResponseEntity<ShipmentResponse> getShipmentByTrackingNumber(@PathVariable String trackingNumber) {
+    public ResponseEntity<ShipmentTrackingResponse> getShipmentByTrackingNumber(@PathVariable String trackingNumber) {
         return ResponseEntity.ok(shipmentService.getShipmentByTrackingNumber(trackingNumber));
     }
 
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<List<ShipmentResponse>> getShipmentsByOrderId(@PathVariable UUID orderId) {
-        return ResponseEntity.ok(shipmentService.getShipmentsByOrderId(orderId));
+    public ResponseEntity<List<ShipmentResponse>> getShipmentsByOrderId(
+            @PathVariable UUID orderId, Authentication authentication) {
+        boolean admin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        return ResponseEntity.ok(shipmentService.getShipmentsByOrderId(orderId, authentication.getName(), admin));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

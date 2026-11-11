@@ -1,6 +1,13 @@
 package com.mintech.ecommerce.security;
 
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.Date;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import javax.crypto.SecretKey;
 
@@ -28,10 +35,11 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String email) {
+    public String generateToken(String email, String passwordHash) {
 
         return Jwts.builder()
                 .subject(email)
+                .claim("credential", credentialSignature(passwordHash))
                 .issuedAt(new Date())
                 .expiration(
                         new Date(System.currentTimeMillis() + jwtExpiration))
@@ -39,7 +47,7 @@ public class JwtService {
                 .compact();
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims parseToken(String token) {
 
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -48,23 +56,21 @@ public class JwtService {
                 .getPayload();
     }
 
-    public String extractEmail(String token) {
-
-        return extractAllClaims(token).getSubject();
+    public boolean matchesCredentials(Claims claims, String passwordHash) {
+        String signature = claims.get("credential", String.class);
+        return signature != null && MessageDigest.isEqual(
+                signature.getBytes(StandardCharsets.US_ASCII),
+                credentialSignature(passwordHash).getBytes(StandardCharsets.US_ASCII));
     }
 
-    public boolean isTokenValid(String token, String email) {
-
+    private String credentialSignature(String passwordHash) {
         try {
-            Claims claims = extractAllClaims(token);
-
-            return email.equals(claims.getSubject())
-                    && claims.getExpiration() != null
-                    && claims.getExpiration().after(new Date());
-
-        } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
-
-            return false;
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(getSigningKey().getEncoded(), "HmacSHA256"));
+            return Base64.getUrlEncoder().withoutPadding()
+                    .encodeToString(mac.doFinal(("credential:" + passwordHash).getBytes(StandardCharsets.UTF_8)));
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("Could not sign credentials", e);
         }
     }
 }
