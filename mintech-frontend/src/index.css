@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #2563EB;
+    --color-primary-dark: #1D4ED8;
+    --color-background: #F5F6F8;
+    --color-surface: #FFFFFF;
+    --color-text-primary: #111827;
+    --color-text-secondary: #6B7280;
+    --color-border: #E5E7EB;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: #F5F6F8;
+    color: #111827;
+    font-family: 'Be Vietnam Pro', Inter, system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+.price-current {
+  @apply text-[#DC2626] font-bold text-base leading-tight;
+}
+.price-original {
+  @apply text-[#9CA3AF] line-through text-xs;
+}
+.badge-discount {
+  @apply bg-[#DC2626] text-white font-semibold text-[11px] px-1.5 py-0.5 rounded;
+}
+
+.transition-base {
+  @apply transition-all duration-150 ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

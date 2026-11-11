@@ -1,0 +1,18 @@
+# Node & Frontend
+node_modules/
+dist/
+.taste-skill/
+
+# Java & Backend
+**/target/
+*.class
+
+# Logs
+*.log
+/.env
+
+# IDE
+.idea/
+*.iml
+.vscode/
+

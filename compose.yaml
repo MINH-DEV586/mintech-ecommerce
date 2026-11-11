@@ -1,0 +1,46 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: mintech_ecommerce
+      MYSQL_USER: mintech
+      MYSQL_PASSWORD: ${MINTECH_DB_PASSWORD:?Set MINTECH_DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MINTECH_DB_ROOT_PASSWORD:?Set MINTECH_DB_ROOT_PASSWORD in .env}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_PASSWORD\" mysql --protocol=TCP -h 127.0.0.1 -u \"$$MYSQL_USER\" \"$$MYSQL_DATABASE\" -e 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+
+  backend:
+    build: ./mintech-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: "8081"
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mintech_ecommerce?serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: mintech
+      SPRING_DATASOURCE_PASSWORD: ${MINTECH_DB_PASSWORD:?Set MINTECH_DB_PASSWORD in .env}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_APPLICATION_JSON: '{"spring.jpa.properties.hibernate.type.preferred_uuid_jdbc_type":"CHAR","spring.jpa.properties.hibernate.hbm2ddl.halt_on_error":true}'
+      JWT_SECRET: ${MINTECH_JWT_SECRET:?Set MINTECH_JWT_SECRET in .env}
+      JWT_EXPIRATION: ${MINTECH_JWT_EXPIRATION:-3600000}
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/8081"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+
+  frontend:
+    build: ./mintech-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${MINTECH_HTTP_PORT:-3000}:80"
+
+volumes:
+  mysql-data:
