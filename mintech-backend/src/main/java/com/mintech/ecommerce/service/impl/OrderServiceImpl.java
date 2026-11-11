@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ConflictException;
 import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.OrderItemRequest;
 import com.mintech.ecommerce.dto.request.OrderRequest;
@@ -79,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
                 int qty = cartItem.getQuantity();
 
                 if (variant.getStockQuantity() < qty) {
-                    throw new IllegalArgumentException(
+                    throw new ConflictException(
                             "Sản phẩm '" + variant.getProduct().getName() + " (" + variant.getColor() + ")' không đủ số lượng tồn kho (còn: " + variant.getStockQuantity() + ")");
                 }
 
@@ -111,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
 
                 int qty = itemReq.getQuantity();
                 if (variant.getStockQuantity() < qty) {
-                    throw new IllegalArgumentException(
+                    throw new ConflictException(
                             "Sản phẩm '" + variant.getProduct().getName() + " (" + variant.getColor() + ")' không đủ số lượng tồn kho (còn: " + variant.getStockQuantity() + ")");
                 }
 
@@ -255,7 +256,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         if (!"PENDING".equalsIgnoreCase(order.getOrderStatus()) && !"CONFIRMED".equalsIgnoreCase(order.getOrderStatus())) {
-            throw new IllegalStateException("Đơn hàng chỉ có thể hủy khi đang ở trạng thái PENDING hoặc CONFIRMED");
+            throw new ConflictException("Đơn hàng chỉ có thể hủy khi đang ở trạng thái PENDING hoặc CONFIRMED");
         }
 
         for (OrderItem item : order.getOrderItems()) {

@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ConflictException;
 import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.CouponRequest;
 import com.mintech.ecommerce.dto.response.CouponResponse;
@@ -27,7 +28,7 @@ public class CouponServiceImpl implements CouponService {
     @Transactional
     public CouponResponse createCoupon(CouponRequest request) {
         if (couponRepository.findByCode(request.getCode().trim().toUpperCase()).isPresent()) {
-            throw new IllegalArgumentException("Mã giảm giá '" + request.getCode() + "' đã tồn tại");
+            throw new ConflictException("Mã giảm giá '" + request.getCode() + "' đã tồn tại");
         }
 
         Coupon coupon = Coupon.builder()

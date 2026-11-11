@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ConflictException;
 import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.ReviewRequest;
 import com.mintech.ecommerce.dto.response.ReviewResponse;
@@ -54,7 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         if (reviewRepository.existsByUserIdAndOrderItemId(user.getId(), orderItem.getId())) {
-            throw new IllegalArgumentException("Bạn đã đánh giá sản phẩm này cho đơn hàng này rồi");
+            throw new ConflictException("Bạn đã đánh giá sản phẩm này cho đơn hàng này rồi");
         }
 
         Review review = Review.builder()

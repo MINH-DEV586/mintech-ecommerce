@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ConflictException;
 import com.mintech.ecommerce.exception.ResourceNotFoundException;
 import com.mintech.ecommerce.dto.request.PaymentRequest;
 import com.mintech.ecommerce.dto.response.PaymentResponse;
@@ -37,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại"));
 
         if ("PAID".equals(order.getPaymentStatus()) || "CANCELLED".equals(order.getOrderStatus())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Đơn hàng không thể thanh toán");
+            throw new ConflictException("Đơn hàng không thể thanh toán");
         }
 
         String method = request.getPaymentMethod().trim().toUpperCase(Locale.ROOT);

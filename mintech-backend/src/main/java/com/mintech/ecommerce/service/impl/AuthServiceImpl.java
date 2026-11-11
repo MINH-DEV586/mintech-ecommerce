@@ -1,5 +1,6 @@
 package com.mintech.ecommerce.service.impl;
 
+import com.mintech.ecommerce.exception.ConflictException;
 import com.mintech.ecommerce.dto.request.RegisterRequest;
 import com.mintech.ecommerce.dto.response.UserResponse;
 import com.mintech.ecommerce.entity.Role;
@@ -34,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     public UserResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email đã tồn tại");
+            throw new ConflictException("Email đã tồn tại");
         }
 
         User user = new User();
